@@ -265,6 +265,11 @@ protected:
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<geometry_msgs::msg::PointStamped>>
   carrot_pub_;
   std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<nav_msgs::msg::Path>> carrot_arc_pub_;
+
+  // Subscription for parameter change
+  rclcpp::AsyncParametersClient::SharedPtr parameters_client_;
+  rclcpp::Subscription<rcl_interfaces::msg::ParameterEvent>::SharedPtr parameter_event_sub_;
+  void on_parameter_event_callback(const rcl_interfaces::msg::ParameterEvent::SharedPtr event);
 };
 
 }  // namespace nav2_regulated_pure_pursuit_controller
