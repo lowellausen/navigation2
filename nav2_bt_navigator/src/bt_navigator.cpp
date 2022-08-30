@@ -58,6 +58,7 @@ BtNavigator::BtNavigator()
     "nav2_time_expired_condition_bt_node",
     "nav2_distance_traveled_condition_bt_node",
     "nav2_single_trigger_bt_node",
+    "nav2_goal_updated_controller_bt_node",
     "nav2_is_battery_low_condition_bt_node",
     "nav2_navigate_through_poses_action_bt_node",
     "nav2_navigate_to_pose_action_bt_node",
@@ -107,20 +108,20 @@ BtNavigator::on_configure(const rclcpp_lifecycle::State & /*state*/)
   feedback_utils.robot_frame = robot_frame_;
   feedback_utils.transform_tolerance = transform_tolerance_;
 
+  // Odometry smoother object for getting current speed
+  odom_smoother_ = std::make_shared<nav2_util::OdomSmoother>(shared_from_this(), 0.3, odom_topic_);
+
   if (!pose_navigator_->on_configure(
-      shared_from_this(), plugin_lib_names, feedback_utils, &plugin_muxer_))
+      shared_from_this(), plugin_lib_names, feedback_utils, &plugin_muxer_, odom_smoother_))
   {
     return nav2_util::CallbackReturn::FAILURE;
   }
 
   if (!poses_navigator_->on_configure(
-      shared_from_this(), plugin_lib_names, feedback_utils, &plugin_muxer_))
+      shared_from_this(), plugin_lib_names, feedback_utils, &plugin_muxer_, odom_smoother_))
   {
     return nav2_util::CallbackReturn::FAILURE;
   }
-
-  // Odometry smoother object for getting current speed
-  odom_smoother_ = std::make_unique<nav2_util::OdomSmoother>(shared_from_this(), 0.3, odom_topic_);
 
   return nav2_util::CallbackReturn::SUCCESS;
 }
