@@ -168,10 +168,6 @@ PlannerServer::on_activate(const rclcpp_lifecycle::State & state)
       &PlannerServer::isPathValid, this,
       std::placeholders::_1, std::placeholders::_2));
 
-  // Add callback for dynamic parameters
-  dyn_params_handler_ = node->add_on_set_parameters_callback(
-    std::bind(&PlannerServer::dynamicParametersCallback, this, _1));
-
   // create bond connection
   createBond();
 
@@ -563,38 +559,12 @@ void PlannerServer::isPathValid(
         cost == nav2_costmap_2d::INSCRIBED_INFLATED_OBSTACLE)
       {
         response->is_valid = false;
+        RCLCPP_ERROR(
+        get_logger(), "PATH IS NOT VALID");
+
       }
     }
   }
-}
-
-rcl_interfaces::msg::SetParametersResult
-PlannerServer::dynamicParametersCallback(std::vector<rclcpp::Parameter> parameters)
-{
-  std::lock_guard<std::mutex> lock(dynamic_params_lock_);
-  rcl_interfaces::msg::SetParametersResult result;
-
-  for (auto parameter : parameters) {
-    const auto & type = parameter.get_type();
-    const auto & name = parameter.get_name();
-
-    if (type == ParameterType::PARAMETER_DOUBLE) {
-      if (name == "expected_planner_frequency") {
-        if (parameter.as_double() > 0) {
-          max_planner_duration_ = 1 / parameter.as_double();
-        } else {
-          RCLCPP_WARN(
-            get_logger(),
-            "The expected planner frequency parameter is %.4f Hz. The value should to be greater"
-            " than 0.0 to turn on duration overrrun warning messages", parameter.as_double());
-          max_planner_duration_ = 0.0;
-        }
-      }
-    }
-  }
-
-  result.successful = true;
-  return result;
 }
 
 }  // namespace nav2_planner
