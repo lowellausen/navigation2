@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   For instructions on using Groot and description of the following BehaviorTree nodes,
-  please refer to the groot_instructions.md and REAMDE.md respectively located in the 
+  please refer to the groot_instructions.md and REAMDE.md respectively located in the
   nav2_behavior_tree package.
 -->
 <root>
@@ -99,6 +99,10 @@
 
     <Condition ID="GoalUpdated"/>
 
+    <Condition ID="GlobalUpdatedGoal"/>
+
+    <Condition ID="GloballyUpdatedGoalCondition"/>
+
     <Condition ID="IsBatteryLow">
       <input_port name="min_battery">Min battery % or voltage before triggering</input_port>
       <input_port name="battery_topic">Topic for battery info</input_port>
@@ -115,8 +119,20 @@
       <input_port name="seconds">Time to check if expired</input_port>
     </Condition>
 
+
+    <Condition ID="PathExpiringTimer">
+      <input_port name="seconds">Time to check if expired</input_port>
+      <input_port name="path">Check if path has been updated to enable timer reset</input_port>
+    </Condition>
+
     <Condition ID="InitialPoseReceived">
     </Condition>
+
+    <Condition ID="IsPathValid">
+      <input_port name="path"> Path to validate </input_port>
+      <input_port name="server_timeout"> Server timeout </input_port>
+    </Condition>
+
     <!-- ############################### CONTROL NODES ################################ -->
     <Control ID="PipelineSequence"/>
 
