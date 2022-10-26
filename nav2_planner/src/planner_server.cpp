@@ -559,9 +559,6 @@ void PlannerServer::isPathValid(
         cost == nav2_costmap_2d::INSCRIBED_INFLATED_OBSTACLE)
       {
         response->is_valid = false;
-        RCLCPP_ERROR(
-        get_logger(), "PATH IS NOT VALID");
-
       }
     }
   }
